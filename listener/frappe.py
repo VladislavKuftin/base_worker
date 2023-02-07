@@ -1,6 +1,7 @@
 import aiohttp
 from . import config
 import json
+from cryptography.x509 import load_pem_x509_certificate
 
 def frappe_server() -> str:
     server = config.FRAPPE_PROTOCOL + "://" + config.FRAPPE_SERVER
@@ -10,15 +11,17 @@ def frappe_server() -> str:
     return server
 
 async def create_card_request(msg):
-    print(config.FRAPPE_SERVER)
     async with aiohttp.ClientSession() as session:
-            body = json.loads(msg.body)
+            #print("CARD REQUEST: ", msg["Info"])
+            info = msg["Info"]
+            body = json.loads(info)
+            #print("BODY: ", body)
             async with session.post(frappe_server()+"/api/resource/Card", json={
-                    'serial': msg.headers["Id"],
-                    'manufacturer': msg.headers["Manufacturer"],
-                    'found': str(msg.timestamp),
-                    'hostname': msg.headers["Hostname"],
-                    'username': msg.headers["Username"],
+                    'serial': msg["Serial"],
+                    'manufacturer': msg["ManufacturerID"],
+                    'found': msg["Timestamp"],
+                    'hostname': msg["Hostname"],
+                    'username': msg["Username"],
                     'label': body['Label'],
                     'model': body['Model'],
                     'card_flags': body['Flags'],
@@ -49,3 +52,30 @@ async def create_card_request(msg):
 
 async def create_cert_request(msg):
     pass
+    """async with aiohttp.ClientSession() as session:
+        body = "-----BEGIN CERTIFICATE-----\n" + msg["Body"] + "\n-----END CERTIFICATE-----"
+        cert = load_pem_x509_certificate(body.encode(encoding = 'UTF-8'))
+        print(cert.subject.get_attributes_for_oid())
+        #for ext in cert.extensions:
+        #    print(ext)
+        async with session.post(frappe_server()+"/api/resource/Certificate", json={
+                'serial': msg["Serial"],
+                'issuer': msg["Issuer"],
+                'found': msg["Timestamp"],
+                'hostname': msg["Hostname"],
+                'username': msg["Username"],
+                'body': msg["Body"],
+                'not_valid_before': cert.not_valid_before,
+                'not_valid_after': cert.not_valid_after,
+                'subject': cert.subject,
+                #'': cert.,
+                #'': cert.,
+                #'': cert.,
+                #'': cert.,
+                'status': 'Pending'
+                
+            }, headers = {
+                'Authorization': "token "+ config.FRAPPE_API_KEY + ":" + config.FRAPPE_API_SECRET
+            }) as resp:
+            
+            print(await resp.text())"""
