@@ -51,31 +51,26 @@ async def create_card_request(msg):
 
 
 async def create_cert_request(msg):
-    pass
-    """async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
         body = "-----BEGIN CERTIFICATE-----\n" + msg["Body"] + "\n-----END CERTIFICATE-----"
         cert = load_pem_x509_certificate(body.encode(encoding = 'UTF-8'))
-        print(cert.subject.get_attributes_for_oid())
-        #for ext in cert.extensions:
-        #    print(ext)
+        print(cert.subject.rfc4514_string())
         async with session.post(frappe_server()+"/api/resource/Certificate", json={
                 'serial': msg["Serial"],
                 'issuer': msg["Issuer"],
                 'found': msg["Timestamp"],
                 'hostname': msg["Hostname"],
                 'username': msg["Username"],
+                'card_serial': msg["ManufacturerID"],
+                'card_manufacturer': msg["Device"],
                 'body': msg["Body"],
-                'not_valid_before': cert.not_valid_before,
-                'not_valid_after': cert.not_valid_after,
-                'subject': cert.subject,
-                #'': cert.,
-                #'': cert.,
-                #'': cert.,
-                #'': cert.,
+                'not_valid_before': str(cert.not_valid_before),
+                'not_valid_after': str(cert.not_valid_after),
+                'subject': cert.subject.rfc4514_string(),
                 'status': 'Pending'
                 
             }, headers = {
                 'Authorization': "token "+ config.FRAPPE_API_KEY + ":" + config.FRAPPE_API_SECRET
             }) as resp:
             
-            print(await resp.text())"""
+            print(await resp.text())

@@ -15,6 +15,8 @@ async def is_card_ignored(serial: str, manufacturer: str) -> bool:
         'SELECT * FROM "tabCard" WHERE serial = $1 and manufacturer = $2', serial, manufacturer)
     return (not (row == None))
 
-async def is_cert_ignored(serial: str, manufacturer: str) -> bool:
+async def is_cert_ignored(serial: str, issuer: str) -> bool:
     conn = await get_connect()
-    return False
+    row = await conn.fetchrow(
+        'SELECT * FROM "tabCertificate" WHERE serial = $1 and issuer = $2', serial, issuer)
+    return (not (row == None))
