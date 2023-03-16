@@ -9,7 +9,7 @@ async def process_event(message) -> None:
 
     async with message.process():
         data = json.loads(message.body)
-
+        #print(data)
         # Iterate cards
         cards = data["CARD_EVENTS"]
         for c in cards:
@@ -23,24 +23,7 @@ async def process_event(message) -> None:
             await log_event(c)
             if not await is_ignored(c):
                 await create_cert_request(c)
-    """
-    async with message.process():
-        match message.headers["Event"]:
-            case "CardConnect":
-                await log_event(message)
-                if not await is_ignored(message):
-                    pass
-                    await create_card_request(message)
-            case "CardDisconnect":
-                await log_event(message)
-            case "CertFound":
-                await log_event(message)
-                if not await is_ignored(message):
-                    pass
-                    await create_cert_request(message)
-            case _:
-                pass
-    """
+
 
 async def new_connection(loop) -> aio_pika.Connection:
     connection = await aio_pika.connect_robust(
@@ -81,9 +64,10 @@ async def log_event(msg):
 
 
 async def is_ignored(msg) -> bool:
+    # print(msg)
     match msg["EventType"]:
         case "CARD_CONNECTED":
-            return await is_card_ignored(msg["Serial"], msg["ManufacturerID"])         
+            return await is_card_ignored(msg["Serial"], msg["ManufacturerID"])
         case "CERT_FOUND":
             return await is_cert_ignored(msg["Serial"], msg["Issuer"])
         case _:

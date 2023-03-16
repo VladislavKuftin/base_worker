@@ -4,6 +4,7 @@ from starlette.datastructures import Secret
 
 config = Config(".env")
 
+
 DB_DRIVER = config("DB_DRIVER", default="postgresql")
 DB_HOST = config("DB_HOST", default=None)
 DB_PORT = config("DB_PORT", cast=int, default=None)
@@ -31,8 +32,8 @@ DB_USE_CONNECTION_FOR_REQUEST = config(
 )
 DB_RETRY_LIMIT = config("DB_RETRY_LIMIT", cast=int, default=1)
 DB_RETRY_INTERVAL = config("DB_RETRY_INTERVAL", cast=int, default=1)
-FRAPPE_PROTOCOL = config("FRAPPE_PROTOCOL", default="http")
-FRAPPE_SERVER = config("FRAPPE_SERVER", default="localhost")
-FRAPPE_PORT = config("FRAPPE_PORT", cast=int, default=None)
-FRAPPE_API_KEY = config("FRAPPE_API_KEY", default=None)
-FRAPPE_API_SECRET = config("FRAPPE_API_SECRET", default=None)
+FRAPPE_PROTOCOL = "http"
+FRAPPE_SERVER = "127.0.0.1"
+FRAPPE_PORT = 8000
+FRAPPE_API_KEY = "3d047a250798423"
+FRAPPE_API_SECRET = "f30aa3f0912b1a4"

@@ -1,12 +1,12 @@
 import asyncpg
-from . import config
+
 
 conn = None
 
 async def get_connect():
     global conn
     if conn == None:
-        conn = await asyncpg.connect(str(config.DB_DSN))
+        conn = await asyncpg.connect("postgresql://postgres:postgres@localhost/_5d59773de681e07f")
     return conn
 
 async def is_card_ignored(serial: str, manufacturer: str) -> bool:
